@@ -65,11 +65,33 @@ FROM fortune_companies
 GROUP BY industry
 ;
 
+-- top 10 companies for employee satisfaction, based on employee tenure
+SELECT company_name,
+CASE WHEN healthcare_benefits = 1 THEN 'Yes'
+ELSE 'No' END has_healthcare_benefits,
+paid_time_off_days,
+avg_employee_tenure
+FROM fortune_companies
+ORDER BY avg_employee_tenure desc
+LIMIT 10
+;
+
 -- Industry with highest turnover
 SELECT industry, ROUND(AVG(avg_employee_tenure),1) AS industry_tenure
 FROM fortune_companies
 GROUP BY industry
 ORDER BY industry_tenure asc
+;
+
+-- The national average of paid days off at the 5 year mark is 15.
+-- Which industry, on average, offers more than that?
+SELECT industry,
+ROUND(AVG(paid_time_off_days),2) AS avg_time_off,
+ROUND(AVG(avg_employee_tenure),2) AS avg_tenure
+FROM fortune_companies
+GROUP BY industry
+HAVING avg_time_off > 15
+AND avg_tenure >5
 ;
 
 -- 10 weeks is the national average amount of maternity leave companies offer. How many companies offer that much?
@@ -91,9 +113,3 @@ ORDER BY paid_time_off_days DESC
 LIMIT 5
 ;
 
--- Which company has the highest revenue per industry?
-SELECT industry, company_name, MAX(revenue) AS company_revenue
-FROM fortune_companies
-GROUP BY industry
-ORDER BY revenue DESC
-;
